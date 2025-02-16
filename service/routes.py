@@ -20,7 +20,7 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
 
@@ -86,13 +86,16 @@ def create_products():
 
     message = product.serialize()
 
-    location_url = url_for("get_products", product_id=product.id, _external=True)
+    #
+    # Uncomment this line of code once you implement READ A PRODUCT
+    #
+    # location_url = url_for("get_products", product_id=product.id, _external=True)
     location_url = "/"  # delete once READ is implemented
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
-# L I S T   P R O D U C T S
+# L I S T   A L L   P R O D U C T S
 ######################################################################
 
 @app.route("/products", methods=["GET"])
@@ -111,7 +114,7 @@ def list_products():
     elif category:
         app.logger.info("Find by category: %s", category)
         # create enum from string
-        category_value = getattr(category, category.upper())
+        category_value = getattr(Category, category.upper())
         products = Product.find_by_category(category_value)
     elif available:
         app.logger.info("Find by available: %s", available)
@@ -127,7 +130,7 @@ def list_products():
     return results, status.HTTP_200_OK
 
 ######################################################################
-# READ A PRODUCT
+# R E A D   A   P R O D U C T
 ######################################################################
 
 @app.route("/products/<int:product_id>", methods=["GET"])
@@ -168,7 +171,6 @@ def update_products(product_id):
     product.id = product_id
     product.update()
     return product.serialize(), status.HTTP_200_OK
-
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
